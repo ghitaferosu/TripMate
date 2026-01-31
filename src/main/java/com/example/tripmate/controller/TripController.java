@@ -1,7 +1,9 @@
 package com.example.tripmate.controller;
 
+import com.example.tripmate.model.Activity;
 import com.example.tripmate.model.Destination;
 import com.example.tripmate.model.Trip;
+import com.example.tripmate.service.ActivityService;
 import com.example.tripmate.service.DestinationService;
 import com.example.tripmate.service.TripService;
 import org.springframework.security.core.Authentication;
@@ -20,10 +22,12 @@ public class TripController {
 
     private final TripService tripService;
     private final DestinationService destinationService;
+    private final ActivityService activityService;
 
-    public TripController(TripService tripService, DestinationService destinationService) {
+    public TripController(TripService tripService, DestinationService destinationService, ActivityService activityService) {
         this.tripService = tripService;
         this.destinationService = destinationService;
+        this.activityService = activityService;
     }
 
     @GetMapping("/dashboard")
@@ -67,6 +71,8 @@ public class TripController {
             model.addAttribute("trip", trip);
             model.addAttribute("destinations", destinationService.getDestinationsForTrip(id));
             model.addAttribute("newDestination", new Destination());
+            model.addAttribute("activities", activityService.getActivitiesForTrip(id));
+            model.addAttribute("newActivity", new Activity());
             return "trip-details";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
