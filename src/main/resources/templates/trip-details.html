@@ -246,9 +246,65 @@
         <!-- Expenses Section -->
         <div class="section-card">
             <h3>💰 Expenses</h3>
-            <div class="placeholder-message">
+            
+            <!-- Add Expense Form -->
+            <div class="card mb-4" style="background-color: #f9f9f9;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Add a New Expense</h5>
+                    <form method="POST" th:action="@{/trips/{id}/expenses(id=${trip.id})}" th:object="${newExpense}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="e.g., Hotel Booking" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="category" th:field="*{category}" placeholder="e.g., Accommodation" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">Amount ($)</label>
+                                <input type="number" class="form-control" id="amount" th:field="*{amount}" placeholder="0.00" step="0.01" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" th:field="*{date}" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Expenses List -->
+            <div th:if="${#lists.isEmpty(expenses)}" class="placeholder-message">
                 <div class="placeholder-icon">💸</div>
                 <p>No expenses yet. Track your spending during the trip!</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(expenses)}" class="row">
+                <div class="col-md-6" th:each="expense : ${expenses}">
+                    <div class="card mb-3" style="border-left: 4px solid #667eea;">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${expense.title}"></h5>
+                            <p class="card-text text-muted" th:text="'Category: ' + ${expense.category}"></p>
+                            <small class="text-secondary d-block mb-2">
+                                <span th:text="'Amount: $' + ${#numbers.formatDecimal(expense.amount, 1, 2)}"></span>
+                                <br>
+                                <span th:text="'Date: ' + ${#temporals.format(expense.date, 'MMM dd, yyyy')}"></span>
+                            </small>
+                            <form method="POST" th:action="@{/expenses/{id}/delete(id=${expense.id})}" class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this expense?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
