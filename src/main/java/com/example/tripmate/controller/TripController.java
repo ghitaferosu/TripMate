@@ -4,10 +4,12 @@ import com.example.tripmate.model.Activity;
 import com.example.tripmate.model.Destination;
 import com.example.tripmate.model.Expense;
 import com.example.tripmate.model.Trip;
+import com.example.tripmate.model.ChecklistItem;
 import com.example.tripmate.service.ActivityService;
 import com.example.tripmate.service.DestinationService;
 import com.example.tripmate.service.ExpenseService;
 import com.example.tripmate.service.TripService;
+import com.example.tripmate.service.ChecklistItemService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,12 +28,14 @@ public class TripController {
     private final DestinationService destinationService;
     private final ActivityService activityService;
     private final ExpenseService expenseService;
+    private final ChecklistItemService checklistItemService;
 
-    public TripController(TripService tripService, DestinationService destinationService, ActivityService activityService, ExpenseService expenseService) {
+    public TripController(TripService tripService, DestinationService destinationService, ActivityService activityService, ExpenseService expenseService, ChecklistItemService checklistItemService) {
         this.tripService = tripService;
         this.destinationService = destinationService;
         this.activityService = activityService;
         this.expenseService = expenseService;
+        this.checklistItemService = checklistItemService;
     }
 
     @GetMapping("/dashboard")
@@ -74,11 +78,13 @@ public class TripController {
             Trip trip = tripService.getTripById(id, email);
             model.addAttribute("trip", trip);
             model.addAttribute("destinations", destinationService.getDestinationsForTrip(id));
-            model.addAttribute("newDestination", new Destinati
+            model.addAttribute("newDestination", new Destination());
             model.addAttribute("expenses", expenseService.getExpensesForTrip(id));
-            model.addAttribute("newExpense", new Expense());on());
+            model.addAttribute("newExpense", new Expense());
             model.addAttribute("activities", activityService.getActivitiesForTrip(id));
             model.addAttribute("newActivity", new Activity());
+            model.addAttribute("checklistItems", checklistItemService.getChecklistItemsForTrip(id));
+            model.addAttribute("newChecklistItem", new ChecklistItem());
             return "trip-details";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

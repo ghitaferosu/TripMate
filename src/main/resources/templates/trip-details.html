@@ -311,9 +311,50 @@
         <!-- Checklist Section -->
         <div class="section-card">
             <h3>✓ Checklist</h3>
-            <div class="placeholder-message">
+            <!-- Add Checklist Item Form -->
+            <div class="card mb-4" style="background-color: #f9f9f9;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Add a Checklist Item</h5>
+                    <form method="POST" th:action="@{/trips/{id}/checklist(id=${trip.id})}" th:object="${newChecklistItem}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="row">
+                            <div class="col-md-10 mb-3">
+                                <input type="text" class="form-control" th:field="*{text}" placeholder="Checklist item..." required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <button type="submit" class="btn btn-primary w-100">Add Item</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Checklist Items List -->
+            <div th:if="${#lists.isEmpty(checklistItems)}" class="placeholder-message">
                 <div class="placeholder-icon">📋</div>
-                <p>No checklist items yet. Create a checklist to prepare for your trip!</p>
+                <p>No checklist items yet.</p>
+            </div>
+            <div th:unless="${#lists.isEmpty(checklistItems)}" class="row">
+                <div class="col-md-8 offset-md-2">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex align-items-center justify-content-between mb-2" th:each="item : ${checklistItems}">
+                            <div>
+                                <span th:text="${item.text}" th:classappend="${item.completed} ? 'text-decoration-line-through text-success' : ''"></span>
+                                <span th:if="${item.completed}" class="badge bg-success ms-2">Done</span>
+                                <span th:if="${!item.completed}" class="badge bg-secondary ms-2">Not done</span>
+                            </div>
+                            <div>
+                                <form method="POST" th:action="@{/checklist/{id}/toggle(id=${item.id})}" class="d-inline">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit" class="btn btn-sm btn-outline-success me-1" th:text="${item.completed} ? 'Mark as Undone' : 'Mark as Done'"></button>
+                                </form>
+                                <form method="POST" th:action="@{/checklist/{id}/delete(id=${item.id})}" class="d-inline">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">Delete</button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
